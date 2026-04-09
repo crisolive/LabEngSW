@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/head :: head('Procurar Filme')}"></head>
+<body>
+	<header th:replace="~{fragmentos/header :: header(activePage='filme')}"></header>
+
+	<div class="header text-center">
+		<h1>
+			<i class="bi bi-film"></i> Busca de Filmes
+		</h1>
+		<p class="lead">Encontre filmes no OMBD</p>
+	</div>
+	<div class="container">
+
+		<div class="search-box">
+			<form th:action="@{/filmeomdb/buscaromdb}" method="get"
+				class="d-flex">
+				<input type="text" name="termo" th:value="${termo}"
+					class="form-control" placeholder="Digite o título do filme">
+				<button type="submit" class="btn btn-primary">
+					<i class="bi bi-search"></i> Buscar
+				</button>
+			</form>
+		</div>
+		<div th:if="${message != null}"
+				class="alert alert-success alert-dismissible fade show text-center message"
+				role="alert">
+				[[${message}]]
+				<button type="button" class="close btn-sm" data-dismiss="alert"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		<!-- Resultados da busca que está no controller-->
+		<div th:if="${resultados}" class="mt-2"  style="max-height: 60vh; overflow-y: auto;">
+			<div class="table-container">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th><i class="bi bi-card-heading"></i> Título</th>
+							<th><i class="bi bi-calendar"></i> Ano</th>
+							<th><i class="bi bi-code"></i> Código</th>
+							<th><i class="bi bi-image"></i> Capa</th>
+							<th>Ações</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="filmeOdbc : ${resultados}">
+							<td th:text="${filmeOdbc.titulo}">Título</td>
+							<td th:text="${filmeOdbc.ano}">Ano</td>
+							<td th:text="${filmeOdbc.imdbID}">Código Omdb</td>
+							<td>
+								<div class="poster-container">
+									<img
+										th:if="${filmeOdbc.poster != null && filmeOdbc.poster != '' && filmeOdbc.poster != 'N/A'}"
+										th:src="${filmeOdbc.poster}" class="poster-img"
+										alt="Capa do filme"
+										onerror="this.onerror=null;this.src='/images/sem-capa.jpg'">
+									<div
+										th:unless="${filmeOdbc.poster != null && filmeOdbc.poster != '' && filmeOdbc.poster != 'N/A'}"
+										class="no-poster">
+										<i class="bi bi-image"></i><br> <small>Sem capa</small>
+									</div>
+								</div>
+							</td>
+							<td>
+								<form th:action="@{/filmeomdb/receberFilme}" method="post">
+									<input type="hidden" name="titulo"
+										th:value="${filmeOdbc.titulo}" /> <input type="hidden"
+										name="ano" th:value="${filmeOdbc.ano}" /> <input
+										type="hidden" name="imdbID" th:value="${filmeOdbc.imdbID}" />
+									<input type="hidden" name="poster"
+										th:value="${filmeOdbc.poster}" />
+									<button type="submit" class="btn btn-primary btn-sm">
+										<i class="bi bi-plus-circle"></i> Adicionar
+									</button>
+								</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+
+
+</html>
